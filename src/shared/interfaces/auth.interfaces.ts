@@ -18,3 +18,8 @@ export enum RESPONSE_TYPE {
 export enum SCOPE {
   email = 'email',
 }
+
+export enum USER {
+  USER = 'USER',
+  APP = 'APP',
+}

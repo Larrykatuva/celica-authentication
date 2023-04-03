@@ -92,3 +92,17 @@ export class VerifyToken {
   @IsNotEmpty()
   token: string;
 }
+
+export class AppTokenDto {
+  @ApiProperty()
+  @IsNotEmpty()
+  client_id: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  client_secret: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  redirect_uri: string;
+}

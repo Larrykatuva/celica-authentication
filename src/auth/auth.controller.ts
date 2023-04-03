@@ -1,12 +1,14 @@
 import {
   BadRequestException,
   Body,
-  Controller, HttpCode,
+  Controller,
+  HttpCode,
   Post,
-  UnauthorizedException
-} from "@nestjs/common";
+  UnauthorizedException,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import {
+  AppTokenDto,
   CodeTokenDto,
   GrantCodeDto,
   RegisterUserDto,
@@ -15,7 +17,7 @@ import {
 } from './dtos/user.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { SharedResponsePipe } from '../shared/decorators/response.decorators';
-import { GRANT_TYPE } from '../shared/interfaces/auth.interfaces';
+import { GRANT_TYPE, USER } from '../shared/interfaces/auth.interfaces';
 import { AppService } from '../application/services/app.service';
 import { GrantCodeService } from '../application/services/grantCode.service';
 import { JwtService } from '@nestjs/jwt';
@@ -91,13 +93,14 @@ export class AuthController {
     };
     return {
       access_token: this.jwtService.sign(payload, {
-        expiresIn: '3600s',
+        expiresIn: '36000s',
         secret: this.configService.get<string>('PRIVATE_KEY'),
       }),
       token_type: 'Bearer',
       scope: 'token',
       state: grantCode.state,
-      expires_in: '1hr',
+      expires_in: '10hr',
+      type: USER.USER,
     };
   }
 
@@ -142,5 +145,32 @@ export class AuthController {
       if (error['message']) throw new UnauthorizedException(error.message);
       throw new UnauthorizedException('Invalid token');
     }
+  }
+
+  @Post('app-token')
+  @HttpCode(200)
+  async getAppToken(@Body() data: AppTokenDto): Promise<any> {
+    const app = await this.appService.filterApp({
+      clientId: data.client_id,
+    });
+    if (!app) throw new BadRequestException('Invalid client_id');
+    if (app.clientSecret != data.client_secret)
+      throw new BadRequestException('Invalid client_secret');
+    if (!app.redirectUri.split(',').includes(data.redirect_uri))
+      throw new BadRequestException('Invalid redirect_uri');
+    const payload = {
+      name: app.name,
+      description: app.description,
+    };
+    return {
+      access_token: this.jwtService.sign(payload, {
+        expiresIn: '36000s',
+        secret: this.configService.get<string>('PRIVATE_KEY'),
+      }),
+      token_type: 'Bearer',
+      scope: 'token',
+      expires_in: '10hr',
+      type: USER.APP,
+    };
   }
 }
