@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Repository, UpdateResult } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
-import { PaginationInterface } from '../../shared/interfaces/pagination.interface';
+import { DefaultPagination } from '../../shared/interfaces/pagination.interface';
 
 @Injectable()
 export class UserService {
@@ -50,7 +50,7 @@ export class UserService {
    * @param options
    */
   async filterPaginatedUsers(
-    pagination: PaginationInterface = { skip: 0, limit: 10 },
+    pagination: DefaultPagination = { skip: 0, limit: 10 },
     filterOptions?: any,
     options?: any,
   ): Promise<[User[], number]> {

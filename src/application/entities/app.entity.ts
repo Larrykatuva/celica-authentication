@@ -2,10 +2,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { CLIENT_TYPE } from '../../shared/interfaces/auth.interfaces';
+import { AppScope } from '../../scope/entities/appScope.entity';
 
 @Entity()
 export class App {
@@ -35,6 +37,9 @@ export class App {
 
   @Column({ default: false })
   acceptLegalTerms: boolean;
+
+  @OneToMany(() => AppScope, (appScope) => appScope.app)
+  scopes: AppScope[];
 
   @CreateDateColumn()
   createdAt: Date;

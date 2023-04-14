@@ -90,6 +90,7 @@ export class AuthController {
       lastName: grantCode.user.lastName,
       sub: grantCode.user.id,
       app: grantCode.app.name,
+      type: USER.USER,
     };
     return {
       access_token: this.jwtService.sign(payload, {
@@ -121,6 +122,7 @@ export class AuthController {
         active: true,
         iat: active.iat,
         exp: active.exp,
+        type: active.type,
       };
     } catch (error) {
       if (error['message']) throw new UnauthorizedException(error.message);
@@ -161,6 +163,7 @@ export class AuthController {
     const payload = {
       name: app.name,
       description: app.description,
+      type: USER.APP,
     };
     return {
       access_token: this.jwtService.sign(payload, {

@@ -11,7 +11,7 @@ import { AppService } from '../services/app.service';
 import { ApiTags } from '@nestjs/swagger';
 import { AppResponseDto, RegisterAppDto } from '../dto/app.dtos';
 import { App } from '../entities/app.entity';
-import { PaginationInterface } from '../../shared/interfaces/pagination.interface';
+import { DefaultPagination } from '../../shared/interfaces/pagination.interface';
 import { ExtractPagination } from '../../shared/decorators/pagination.decorator';
 import { DeleteResult } from 'typeorm';
 import { SharedResponsePipe } from '../../shared/decorators/response.decorators';
@@ -29,7 +29,7 @@ export class AppController {
 
   @Get()
   async getAllApps(
-    @ExtractPagination() pagination: PaginationInterface,
+    @ExtractPagination() pagination: DefaultPagination,
   ): Promise<[App[], number]> {
     return await this.appService.filterPaginatedApps(pagination);
   }
