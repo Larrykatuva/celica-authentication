@@ -62,11 +62,6 @@ export class AuthService {
       throw new BadRequestException('User email already registered');
     user.password = this.encryptPassword(user.password);
     user['code'] = this.generateRandomCode();
-    // await this.emailService.sendEmail(
-    //   user.email,
-    //   'Account activation code',
-    //   user['code'],
-    // );
     return await this.userService.createUser(user as User);
   }
 

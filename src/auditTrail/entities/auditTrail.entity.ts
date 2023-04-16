@@ -17,22 +17,18 @@ export class AuditTrail {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ nullable: true })
   @ManyToOne(() => App, (app) => app.id)
   @JoinColumn()
   app: App;
 
-  @Column({ nullable: true })
   @ManyToOne(() => User, (user) => user.id)
   @JoinColumn()
   user: User;
 
-  @Column({ nullable: true })
   @ManyToOne(() => AppScope, (appScope) => appScope.id)
   @JoinColumn()
   appScope: AppScope;
 
-  @Column({ nullable: true })
   @ManyToOne(() => Scope, (scope) => scope.id)
   @JoinColumn()
   scope: Scope;

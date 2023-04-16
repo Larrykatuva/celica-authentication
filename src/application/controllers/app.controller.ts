@@ -14,7 +14,7 @@ import { App } from '../entities/app.entity';
 import { DefaultPagination } from '../../shared/interfaces/pagination.interface';
 import { ExtractPagination } from '../../shared/decorators/pagination.decorator';
 import { DeleteResult } from 'typeorm';
-import { SharedResponsePipe } from '../../shared/decorators/response.decorators';
+import { SharedResponse } from '../../shared/decorators/response.decorators';
 
 @Controller('app')
 @ApiTags('APP')
@@ -22,7 +22,7 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Post()
-  @SharedResponsePipe(AppResponseDto)
+  @SharedResponse(AppResponseDto)
   async registerApp(@Body() app: RegisterAppDto): Promise<App> {
     return await this.appService.createApp(app);
   }
