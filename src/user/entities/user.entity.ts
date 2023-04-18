@@ -4,10 +4,10 @@ import {
   Entity,
   Index,
   JoinTable,
-  ManyToMany,
+  ManyToMany, OneToMany,
   PrimaryGeneratedColumn,
-  UpdateDateColumn,
-} from 'typeorm';
+  UpdateDateColumn
+} from "typeorm";
 import { Role } from './role.entity';
 
 @Entity()
@@ -34,8 +34,7 @@ export class User {
   @Column({ nullable: true })
   code: string;
 
-  @ManyToMany(() => Role, (role) => role.users)
-  @JoinTable()
+  @OneToMany(() => Role, (role) => role.user)
   roles: Role[];
 
   @CreateDateColumn()

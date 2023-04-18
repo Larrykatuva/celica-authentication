@@ -29,7 +29,7 @@ export class AppScopeService {
         ...options,
       });
     } catch (error) {
-      throw new BadRequestException(error.response);
+      throw new BadRequestException(error.message);
     }
   }
 
@@ -95,7 +95,7 @@ export class AppScopeService {
         ...options,
       });
     } catch (error) {
-      throw new BadRequestException(error.response);
+      throw new BadRequestException(error.message);
     }
   }
 

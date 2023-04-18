@@ -16,7 +16,7 @@ import {
   VerifyToken,
 } from './dtos/user.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { SharedResponsePipe } from '../shared/decorators/response.decorators';
+import { SharedResponse } from '../shared/decorators/response.decorators';
 import { GRANT_TYPE, USER } from '../shared/interfaces/auth.interfaces';
 import { AppService } from '../application/services/app.service';
 import { GrantCodeService } from '../application/services/grantCode.service';
@@ -34,7 +34,7 @@ export class AuthController {
     private configService: ConfigService,
   ) {}
   @Post('user/register')
-  @SharedResponsePipe(UserResponseDto)
+  @SharedResponse(UserResponseDto)
   async registerUser(@Body() user: RegisterUserDto): Promise<UserResponseDto> {
     return await this.authService.registerUser(user);
   }
@@ -66,7 +66,7 @@ export class AuthController {
 
   @Post('token')
   @HttpCode(200)
-  @SharedResponsePipe(undefined)
+  @SharedResponse(undefined)
   async getUserToken(@Body() data: CodeTokenDto): Promise<any> {
     const app = await this.appService.filterApp({
       clientId: data.client_id,

@@ -11,6 +11,14 @@ export class ConfigureScopeDto {
   description: string;
 }
 
+export class UpdateScopeDto {
+  @ApiProperty()
+  name: string;
+
+  @ApiProperty()
+  description: string;
+}
+
 export class ScopeResDto extends ConfigureScopeDto {
   @ApiProperty()
   id: string;
