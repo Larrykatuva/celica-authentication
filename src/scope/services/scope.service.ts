@@ -20,7 +20,7 @@ export class ScopeService {
         where: { ...filterOptions },
       });
     } catch (error) {
-      throw new BadRequestException(error.response);
+      throw new BadRequestException(error.message);
     }
   }
 
@@ -56,7 +56,7 @@ export class ScopeService {
         ...options,
       });
     } catch (error) {
-      throw new BadRequestException(error.response);
+      throw new BadRequestException(error.message);
     }
   }
 

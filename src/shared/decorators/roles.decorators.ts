@@ -1,7 +1,7 @@
 import { applyDecorators, SetMetadata, UseGuards } from '@nestjs/common';
-import { UserRole } from '../../user/entities/role.entity';
 import { AuthGuard } from '../../auth/guards/auth.guard';
 import { RolesGuard } from '../../auth/guards/roles.guard';
+import { UserRole } from "../../user/interfaces/role.interface";
 
 /**
  * Decorator to allow specifying what roles are required to access specific resources.

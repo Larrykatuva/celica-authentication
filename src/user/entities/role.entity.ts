@@ -2,17 +2,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  ManyToMany,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { User } from './user.entity';
-
-export enum UserRole {
-  SUPER_ADMIN = 'SUPER_ADMIN',
-  SUPPORT = 'SUPPORT',
-  BUSINESS = 'BUSINESS',
-}
+import { UserRole } from '../interfaces/role.interface';
 
 @Entity()
 export class Role {
@@ -26,8 +21,14 @@ export class Role {
   })
   role: UserRole;
 
-  @ManyToMany(() => User, (user) => user.roles)
-  users: User[];
+  @ManyToOne(() => User, (user) => user.roles)
+  user: User;
+
+  @ManyToOne(() => User, (user) => user.id)
+  assignedBy: User;
+
+  @Column({ default: true })
+  isActive: boolean;
 
   @CreateDateColumn()
   createdAt: Date;
