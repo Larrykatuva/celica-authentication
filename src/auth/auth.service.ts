@@ -15,7 +15,6 @@ export class AuthService {
     private userService: UserService,
     private emailService: NodeMailerService,
     private grantCodeService: GrantCodeService,
-    private appService: AppService,
   ) {}
 
   /**

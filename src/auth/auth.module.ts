@@ -7,12 +7,14 @@ import { ApplicationModule } from '../application/application.module';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './constants/auth.contants';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ScopeModule } from "../scope/scope.module";
 
 @Module({
   imports: [
     NotificationModule,
     UserModule,
     ApplicationModule,
+    ScopeModule,
     JwtModule.registerAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({

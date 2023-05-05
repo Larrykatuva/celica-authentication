@@ -20,11 +20,11 @@ export class AppScope {
   @JoinColumn()
   app: App;
 
-  @OneToOne(() => Scope, (scope) => scope.id)
+  @ManyToOne(() => Scope, (scope) => scope.id)
   @JoinColumn()
   scope: Scope;
 
-  @OneToOne(() => User, (user) => user.id)
+  @ManyToOne(() => User, (user) => user.id)
   @JoinColumn()
   actionBy: User;
 

@@ -14,6 +14,7 @@ import {
 } from '../interfaces/errors.interface';
 import { CommonResponseDto } from '../dtos/shared.dto';
 import { PaginationInterceptor } from '../interceptors/pagination.interceptor';
+import { ApiNoContentResponse } from '@nestjs/swagger/dist/decorators/api-response.decorator';
 
 /**
  * Response swagger dto after creating a universal bill.
@@ -24,6 +25,11 @@ export const SharedResponse = (dto: any, status = 201) => {
     status == 201
       ? ApiCreatedResponse({
           description: 'Successful Request',
+          type: dto,
+        })
+      : status == 204
+      ? ApiNoContentResponse({
+          description: 'No Content',
           type: dto,
         })
       : ApiOkResponse({
@@ -83,8 +89,8 @@ export const SharedPaginatedResponse = <T extends Type<any>>(dto: T) => {
  */
 export const RequestPaginationDecorator = <T extends Type<any>>(dto: T) => {
   return applyDecorators(
-    ApiQuery({ name: 'PageSize', type: 'number', required: false }),
-    ApiQuery({ name: 'PageIndex', type: 'number', required: false }),
+    ApiQuery({ name: 'skip', type: 'number', required: false }),
+    ApiQuery({ name: 'take', type: 'number', required: false }),
     SharedPaginatedResponse(dto),
     UseInterceptors(PaginationInterceptor),
   );

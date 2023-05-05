@@ -6,12 +6,18 @@ import { App } from '../../application/entities/app.entity';
 import { Scope } from '../entities/scope.entity';
 import { User } from '../../user/entities/user.entity';
 import { DefaultPagination } from '../../shared/interfaces/pagination.interface';
+import { UpdateAppScopeDto } from '../dtos/appScope.dto';
+import { ScopeService } from './scope.service';
+import { UserService } from '../../user/services/user.service';
+import { AppService } from '../../application/services/app.service';
 
 @Injectable()
 export class AppScopeService {
   constructor(
     @InjectRepository(AppScope)
     private appScopeRepository: Repository<AppScope>,
+    private scopeService: ScopeService,
+    private appService: AppService,
   ) {}
 
   /**
@@ -33,6 +39,18 @@ export class AppScopeService {
     }
   }
 
+  async getAppScopes(filterOptions: any): Promise<string[]> {
+    const appScopes = await this.appScopeRepository.find({
+      where: { ...filterOptions },
+      relations: ['scope'],
+    });
+    const result: string[] = [];
+    for (let i = 0; i < appScopes.length; i++){
+      result.push(appScopes[i].scope.name);
+    }
+    return result;
+  }
+
   /**
    * Link an app to scope.
    * @param app
@@ -51,7 +69,7 @@ export class AppScopeService {
     return await this.appScopeRepository.save({
       app: app,
       scope: scope,
-      user: user,
+      actionBy: user,
     });
   }
 
@@ -64,17 +82,31 @@ export class AppScopeService {
   async updateAppScopeConfiguration(
     filterOptions: any,
     user: User,
-    updateData: Partial<AppScope>,
+    updateData: UpdateAppScopeDto,
   ): Promise<AppScope> {
-    if (!updateData.scope?.isActive)
-      throw new BadRequestException('Scope is deactivated.');
     if (!(await this.filterAppScope(filterOptions)))
       throw new BadRequestException('Configuration not found');
-    await this.appScopeRepository.update(
-      { ...filterOptions },
-      { actionBy: user, ...updateData },
-    );
-    return await this.filterAppScope(filterOptions);
+    const updateRecord = new AppScope();
+    updateRecord.actionBy = user;
+    if (updateData.scope)
+      updateRecord.scope = await this.scopeService.filterScope({
+        id: updateData.scope,
+      });
+    if (updateData.app)
+      updateRecord.app = await this.appService.filterApp({
+        id: updateData.app,
+      });
+    if (
+      await this.filterAppScope({
+        app: { id: updateData.app },
+        scope: { id: updateData.scope },
+      })
+    )
+      throw new BadRequestException('App already linked to scope.');
+    await this.appScopeRepository.update({ ...filterOptions }, updateRecord);
+    return await this.filterAppScope(filterOptions, {
+      relations: ['app', 'scope', 'actionBy'],
+    });
   }
 
   /**

@@ -36,7 +36,7 @@ const prepareNextUrl = (
   return (
     relativeUrl +
     request['baseUrl'] +
-    `?PageSize=${pagination.take}&PageIndex=${nextIndex}` +
+    `?take=${pagination.take}&skip=${nextIndex}` +
     prepareQueryParams(request)
   );
 };
@@ -59,7 +59,7 @@ const preparePreviousUrl = (
   return (
     relativeUrl +
     request['baseUrl'] +
-    `?PageSize=${pagination.take}&PageIndex=${previousIndex}` +
+    `?take=${pagination.take}&skip=${previousIndex}` +
     prepareQueryParams(request)
   );
 };

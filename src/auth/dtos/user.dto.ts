@@ -105,4 +105,7 @@ export class AppTokenDto {
   @ApiProperty()
   @IsNotEmpty()
   redirect_uri: string;
+
+  @ApiProperty({ type: [String] })
+  scope: string[];
 }
