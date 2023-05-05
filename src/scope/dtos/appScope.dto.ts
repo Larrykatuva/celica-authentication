@@ -4,7 +4,7 @@ import { AppResponseDto } from '../../application/dto/app.dtos';
 import { ScopeResDto } from './scope.dto';
 import { UserResponseDto } from '../../auth/dtos/user.dto';
 
-export class CreatAppScopeDto {
+export class CreateAppScopeDto {
   @ApiProperty()
   @IsNotEmpty()
   app: string;

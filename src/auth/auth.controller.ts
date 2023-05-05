@@ -22,6 +22,7 @@ import { AppService } from '../application/services/app.service';
 import { GrantCodeService } from '../application/services/grantCode.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { AppScopeService } from '../scope/services/appScope.service';
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -32,6 +33,7 @@ export class AuthController {
     private grantCodeService: GrantCodeService,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private appScopeService: AppScopeService,
   ) {}
   @Post('user/register')
   @SharedResponse(UserResponseDto)
@@ -160,10 +162,18 @@ export class AuthController {
       throw new BadRequestException('Invalid client_secret');
     if (!app.redirectUri.split(',').includes(data.redirect_uri))
       throw new BadRequestException('Invalid redirect_uri');
+    const appScopes = await this.appScopeService.getAppScopes({
+      app: { id: app.id },
+    });
+    data.scope.map((scope) => {
+      if (!appScopes.includes(scope))
+        throw new BadRequestException('Scope '+ scope + ' is invalid');
+    });
     const payload = {
       name: app.name,
       description: app.description,
       type: USER.APP,
+      scopes: data.scope,
     };
     return {
       access_token: this.jwtService.sign(payload, {
@@ -174,6 +184,12 @@ export class AuthController {
       scope: 'token',
       expires_in: '10hr',
       type: USER.APP,
+      scopes: data.scope,
     };
+  }
+
+  arrayContains(target, array): boolean {
+    const difference = target.filter((x) => !array.includes(x));
+    return difference.length === 0;
   }
 }

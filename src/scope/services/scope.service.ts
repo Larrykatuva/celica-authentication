@@ -69,6 +69,7 @@ export class ScopeService {
     filterOptions: Partial<Scope>,
     updateData: Partial<Scope>,
   ): Promise<Scope> {
+    console.log(filterOptions, updateData);
     if (!(await this.filterScope(filterOptions)))
       throw new BadRequestException('Scope not found');
     await this.scopeRepository.update({ ...filterOptions }, { ...updateData });

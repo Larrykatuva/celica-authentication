@@ -14,7 +14,7 @@ import { App } from '../entities/app.entity';
 import { DefaultPagination } from '../../shared/interfaces/pagination.interface';
 import { ExtractPagination } from '../../shared/decorators/pagination.decorator';
 import { DeleteResult } from 'typeorm';
-import { SharedResponse } from '../../shared/decorators/response.decorators';
+import { SharedPaginatedResponse, SharedResponse } from "../../shared/decorators/response.decorators";
 
 @Controller('app')
 @ApiTags('APP')
@@ -28,6 +28,7 @@ export class AppController {
   }
 
   @Get()
+  @SharedPaginatedResponse(AppResponseDto)
   async getAllApps(
     @ExtractPagination() pagination: DefaultPagination,
   ): Promise<[App[], number]> {
@@ -35,11 +36,13 @@ export class AppController {
   }
 
   @Get(':id')
+  @SharedResponse(AppResponseDto, 200)
   async getAppById(@Param('id') id: string): Promise<App> {
     return await this.appService.filterApp({ id: id });
   }
 
   @Patch(':id')
+  @SharedResponse(AppResponseDto, 200)
   async updateAppById(
     @Body() app: RegisterAppDto,
     @Param('id') id: string,
@@ -49,6 +52,7 @@ export class AppController {
   }
 
   @Delete(':id')
+  @SharedResponse(undefined, 204)
   async deleteApp(@Param() id: string): Promise<DeleteResult> {
     return await this.appService.deleteApp({ id: id });
   }

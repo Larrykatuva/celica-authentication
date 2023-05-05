@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Scope } from './entities/scope.entity';
 import { AppScope } from './entities/appScope.entity';
@@ -10,6 +10,9 @@ import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from '../auth/constants/auth.contants';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UserModule } from '../user/user.module';
+import { AppScopeController } from './controllers/appScope.controller';
+import { AppModule } from '../app.module';
+import { ApplicationModule } from '../application/application.module';
 
 @Module({
   imports: [
@@ -24,9 +27,10 @@ import { UserModule } from '../user/user.module';
     }),
     AuditTrailModule,
     UserModule,
+    ApplicationModule,
   ],
   providers: [ScopeService, AppScopeService],
-  controllers: [ScopeController],
-  exports: [ScopeService],
+  controllers: [ScopeController, AppScopeController],
+  exports: [ScopeService, AppScopeService],
 })
 export class ScopeModule {}

@@ -9,12 +9,20 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ScopeService } from '../services/scope.service';
-import { ConfigureScopeDto, UpdateScopeDto } from '../dtos/scope.dto';
+import {
+  ConfigureScopeDto,
+  ScopeResDto,
+  UpdateScopeDto,
+} from '../dtos/scope.dto';
 import { Scope } from '../entities/scope.entity';
 import { ExtractPagination } from '../../shared/decorators/pagination.decorator';
 import { DefaultPagination } from '../../shared/interfaces/pagination.interface';
 import { AuthRoles } from '../../shared/decorators/roles.decorators';
 import { UserRole } from '../../user/interfaces/role.interface';
+import {
+  RequestPaginationDecorator,
+  SharedResponse,
+} from 'src/shared/decorators/response.decorators';
 
 @ApiTags('Scope')
 @AuthRoles(UserRole.SUPER_ADMIN)
@@ -23,11 +31,13 @@ export class ScopeController {
   constructor(private scopeService: ScopeService) {}
 
   @Post()
+  @SharedResponse(ScopeResDto)
   async addScope(@Body() scope: ConfigureScopeDto): Promise<Scope> {
     return await this.scopeService.configureNewScope(scope);
   }
 
   @Get()
+  @RequestPaginationDecorator(ScopeResDto)
   async getAllScopes(
     @ExtractPagination() pagination: DefaultPagination,
   ): Promise<[Scope[], number]> {
@@ -35,6 +45,7 @@ export class ScopeController {
   }
 
   @Get(':id')
+  @SharedResponse(ScopeResDto, 200)
   async getScope(@Param('id') id: string): Promise<Scope> {
     const scope = await this.scopeService.filterScope({ id: id });
     if (!scope) throw new BadRequestException('Scope not found');
@@ -42,9 +53,10 @@ export class ScopeController {
   }
 
   @Patch(':id')
+  @SharedResponse(ScopeResDto, 200)
   async updateScope(
+    @Body() updateData: ConfigureScopeDto,
     @Param('id') id: string,
-    @Body() updateData: UpdateScopeDto,
   ): Promise<Scope> {
     return await this.scopeService.updateScope({ id: id }, updateData);
   }
