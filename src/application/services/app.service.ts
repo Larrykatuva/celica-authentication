@@ -1,7 +1,12 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { App } from '../entities/app.entity';
-import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import {
+  DeleteResult,
+  FindOneOptions,
+  Repository,
+  UpdateResult,
+} from 'typeorm';
 import { RegisterAppDto } from '../dto/app.dtos';
 
 @Injectable()
@@ -52,10 +57,17 @@ export class AppService {
   /**
    * Filter app by filter options.
    * @param filterOptions
+   * @param options
    */
-  async filterApp(filterOptions: any): Promise<App | null> {
+  async filterApp(
+    filterOptions: any,
+    options?: FindOneOptions<App>,
+  ): Promise<App | null> {
     try {
-      return await this.appRepository.findOneBy({ ...filterOptions });
+      return await this.appRepository.findOne({
+        where: { ...filterOptions },
+        ...options,
+      });
     } catch (error: any) {
       return null;
     }
@@ -82,7 +94,7 @@ export class AppService {
   async filterPaginatedApps(
     pagination: { skip: number; limit: number } = { skip: 0, limit: 10 },
     filterOptions?: any,
-    options?: any,
+    options?: FindOneOptions<App>,
   ): Promise<[App[], number]> {
     return await this.appRepository.findAndCount({
       where: { ...filterOptions },
