@@ -167,7 +167,7 @@ export class AuthController {
     });
     data.scope.map((scope) => {
       if (!appScopes.includes(scope))
-        throw new BadRequestException('Scope '+ scope + ' is invalid');
+        throw new BadRequestException('Scope ' + scope + ' is invalid');
     });
     const payload = {
       name: app.name,
