@@ -1,7 +1,7 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { Scope } from '../entities/scope.entity';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { FindOneOptions, Repository } from 'typeorm';
+import { FindOneOptions, FindOptionsWhere, Repository } from 'typeorm';
 import { DefaultPagination } from '../../shared/interfaces/pagination.interface';
 
 @Injectable()
@@ -14,13 +14,13 @@ export class ScopeService {
    * Filter scope by filter options.
    * @param filterOptions
    */
-  async filterScope(filterOptions: Partial<Scope>): Promise<Scope> {
+  async filterScope(filterOptions: FindOptionsWhere<Scope>): Promise<Scope> {
     try {
       return await this.scopeRepository.findOne({
-        where: { ...filterOptions },
+        where: filterOptions,
       });
     } catch (error) {
-      throw new BadRequestException(error.message);
+      throw error;
     }
   }
 
@@ -46,17 +46,17 @@ export class ScopeService {
    */
   async filterScopes(
     pagination: DefaultPagination,
-    filterOptions?: Partial<Scope>,
+    filterOptions?: FindOptionsWhere<Scope>,
     options?: FindOneOptions<Scope>,
   ): Promise<[Scope[], number]> {
     try {
       return await this.scopeRepository.findAndCount({
         ...pagination,
-        where: { ...filterOptions },
+        where: filterOptions,
         ...options,
       });
     } catch (error) {
-      throw new BadRequestException(error.message);
+      throw error;
     }
   }
 
@@ -66,13 +66,12 @@ export class ScopeService {
    * @param updateData
    */
   async updateScope(
-    filterOptions: Partial<Scope>,
+    filterOptions: FindOptionsWhere<Scope>,
     updateData: Partial<Scope>,
   ): Promise<Scope> {
-    console.log(filterOptions, updateData);
     if (!(await this.filterScope(filterOptions)))
       throw new BadRequestException('Scope not found');
-    await this.scopeRepository.update({ ...filterOptions }, { ...updateData });
+    await this.scopeRepository.update(filterOptions, updateData);
     return await this.filterScope(filterOptions);
   }
 
@@ -80,7 +79,9 @@ export class ScopeService {
    * Delete scope configuration.
    * @param filterOptions
    */
-  async deleteScopeConfiguration(filterOptions: Partial<Scope>): Promise<void> {
+  async deleteScopeConfiguration(
+    filterOptions: FindOptionsWhere<Scope>,
+  ): Promise<void> {
     if (!(await this.filterScope(filterOptions)))
       throw new BadRequestException('Scope not found');
     await this.scopeRepository.delete({ ...filterOptions });

@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Role } from '../entities/role.entity';
-import { FindOneOptions, Repository } from 'typeorm';
+import { FindOneOptions, FindOptionsWhere, Repository } from "typeorm";
 import { UserService } from './user.service';
 import { AssignRoleDto, UpdateRoleDto } from '../dtos/role.dtos';
 
@@ -23,11 +23,11 @@ export class RoleService {
   ): Promise<Role> {
     try {
       return await this.roleRepository.findOne({
-        where: { ...filterOptions },
+        where: filterOptions,
         ...options,
       });
     } catch (error) {
-      throw new BadRequestException(error.message);
+      throw error;
     }
   }
 
@@ -55,7 +55,7 @@ export class RoleService {
    * @param assignedBy
    */
   async updateUserRole(
-    filterOptions: any,
+    filterOptions: FindOptionsWhere<Role>,
     updateData: UpdateRoleDto,
     assignedBy: string,
   ): Promise<Role> {
@@ -65,7 +65,7 @@ export class RoleService {
     role.assignedBy = await this.userService.filterUser({ id: assignedBy });
     if (!(await this.filterRole(filterOptions)))
       throw new BadRequestException('User not found');
-    await this.roleRepository.update({ ...filterOptions }, role);
+    await this.roleRepository.update(filterOptions, role);
     return await this.filterRole(filterOptions);
   }
 
@@ -80,11 +80,11 @@ export class RoleService {
   ): Promise<Role[]> {
     try {
       return await this.roleRepository.find({
-        where: { ...filterOptions },
+        where: filterOptions,
         ...options,
       });
     } catch (error) {
-      throw new BadRequestException(error.message);
+      throw error;
     }
   }
 }

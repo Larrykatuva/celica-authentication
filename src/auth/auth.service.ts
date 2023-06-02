@@ -52,13 +52,22 @@ export class AuthService {
   }
 
   /**
-   * Create a new user and send an activation code to email.
+   * creates a new user as well as it sends a verification code
+   * to given email.
    * @param user
    */
   async registerUser(user: RegisterUserDto): Promise<User> {
     const userExists = await this.userService.filterUser({ email: user.email });
     if (userExists)
       throw new BadRequestException('User email already registered');
+    if (user.phoneNumber)
+      if (
+        await this.userService.filterUser({
+          phoneNumber: user.phoneNumber,
+          phoneVerified: true,
+        })
+      )
+        throw new BadRequestException('Phone number is already taken');
     user.password = this.encryptPassword(user.password);
     user['code'] = this.generateRandomCode();
     return await this.userService.createUser(user as User);

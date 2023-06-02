@@ -32,6 +32,7 @@ class TypeOrmConfigService implements TypeOrmOptionsFactory {
       entities: [App, User, Role, GrantCode, Scope, AppScope, AuditTrail],
       synchronize: this.configService.get<boolean>('DATABASE_SYNC'),
       logging: this.configService.get<boolean>('LOGGER'),
+      useUTC: true,
       subscribers: [],
       migrations: [],
     };

@@ -1,5 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { Repository, UpdateResult } from 'typeorm';
+import {
+  FindOneOptions,
+  FindOptionsWhere,
+  Repository,
+  UpdateResult,
+} from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
 import { DefaultPagination } from '../../shared/interfaces/pagination.interface';
@@ -22,11 +27,18 @@ export class UserService {
   /**
    *Filter user by filter options and return User matching filter.
    * @param filterOptions
+   * @param options
    */
-  async filterUser(filterOptions: any): Promise<User> {
+  async filterUser(
+    filterOptions: FindOptionsWhere<User>,
+    options?: FindOneOptions<User>,
+  ): Promise<User> {
     try {
-      return await this.userRepository.findOneBy({ ...filterOptions });
-    } catch (error: any) {
+      return await this.userRepository.findOne({
+        where: filterOptions,
+        ...options,
+      });
+    } catch (error) {
       return null;
     }
   }
@@ -38,7 +50,7 @@ export class UserService {
    */
   async filterUsers(filterOptions: any, options: any): Promise<User[]> {
     return await this.userRepository.find({
-      where: { ...filterOptions },
+      where: filterOptions,
       ...options,
     });
   }
@@ -54,11 +66,15 @@ export class UserService {
     filterOptions?: any,
     options?: any,
   ): Promise<[User[], number]> {
-    return await this.userRepository.findAndCount({
-      where: { ...filterOptions },
-      ...pagination,
-      ...options,
-    });
+    try {
+      return await this.userRepository.findAndCount({
+        where: filterOptions,
+        ...pagination,
+        ...options,
+      });
+    } catch (error) {
+      throw error;
+    }
   }
 
   /**
@@ -70,9 +86,6 @@ export class UserService {
     filterOptions: any,
     updateOptions: Partial<User>,
   ): Promise<UpdateResult> {
-    return await this.userRepository.update(
-      { ...filterOptions },
-      { ...updateOptions },
-    );
+    return await this.userRepository.update(filterOptions, updateOptions);
   }
 }
