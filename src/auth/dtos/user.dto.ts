@@ -1,24 +1,28 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEmail, MinLength } from 'class-validator';
-import {
-  GRANT_TYPE,
-  RESPONSE_TYPE,
-} from '../../shared/interfaces/auth.interfaces';
+import { GRANT_TYPE } from '../../shared/interfaces/auth.interfaces';
 import { IsNotEmpty } from '@nestjs/class-validator';
 
 export class RegisterUserDto {
   @ApiProperty()
   @IsEmail()
+  @IsNotEmpty()
   email: string;
 
   @ApiProperty()
+  @IsNotEmpty()
   firstName: string;
 
   @ApiProperty()
+  @IsNotEmpty()
   lastName: string;
 
   @ApiProperty()
+  phoneNumber: string;
+
+  @ApiProperty()
   @MinLength(6)
+  @IsNotEmpty()
   password: string;
 }
 
@@ -74,6 +78,9 @@ export class UserResponseDto {
 
   @ApiProperty()
   lastName: string;
+
+  @ApiProperty()
+  phoneNumber: string;
 
   @ApiProperty()
   active: boolean;

@@ -1,7 +1,7 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AuditTrail } from '../entities/auditTrail.entity';
-import { FindOneOptions, Repository } from 'typeorm';
+import { FindOneOptions, FindOptionsWhere, Repository } from 'typeorm';
 import { OnEvent } from '@nestjs/event-emitter';
 import { AppScope } from '../../scope/entities/appScope.entity';
 import { Scope } from '../../scope/entities/scope.entity';
@@ -22,16 +22,16 @@ export class AuditTrailService {
    * @param options
    */
   async filterAuditTrail(
-    filterOptions: any,
+    filterOptions: FindOptionsWhere<AuditTrail>,
     options?: FindOneOptions<AuditTrail>,
   ): Promise<AuditTrail> {
     try {
       return await this.auditTrailRepository.findOne({
-        where: { ...filterOptions },
+        where: filterOptions,
         ...options,
       });
     } catch (error) {
-      throw new BadRequestException(error.response);
+      throw error;
     }
   }
 
@@ -46,7 +46,7 @@ export class AuditTrailService {
     appScope?: AppScope;
     scope?: Scope;
     description: string;
-  }) {
+  }): Promise<void> {
     await this.auditTrailRepository.save(data);
   }
 
@@ -58,17 +58,17 @@ export class AuditTrailService {
    */
   async filterAuditTrailRecords(
     pagination: DefaultPagination,
-    filterOptions?: any,
+    filterOptions?: FindOptionsWhere<AuditTrail>,
     options?: FindOneOptions<AuditTrail>,
   ): Promise<[AuditTrail[], number]> {
     try {
       return await this.auditTrailRepository.findAndCount({
-        where: { ...filterOptions },
+        where: filterOptions,
         ...pagination,
         ...options,
       });
     } catch (error) {
-      throw new BadRequestException(error.response);
+      throw error;
     }
   }
 }

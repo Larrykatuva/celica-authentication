@@ -4,6 +4,7 @@ import { App } from '../entities/app.entity';
 import {
   DeleteResult,
   FindOneOptions,
+  FindOptionsWhere,
   Repository,
   UpdateResult,
 } from 'typeorm';
@@ -43,7 +44,7 @@ export class AppService {
   /**
    * Generate random string of characters.
    */
-  async generateRandomString(length): Promise<string> {
+  async generateRandomString(length: number): Promise<string> {
     const characters =
       'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let result = '';
@@ -60,15 +61,15 @@ export class AppService {
    * @param options
    */
   async filterApp(
-    filterOptions: any,
+    filterOptions: FindOptionsWhere<App>,
     options?: FindOneOptions<App>,
   ): Promise<App | null> {
     try {
       return await this.appRepository.findOne({
-        where: { ...filterOptions },
+        where: filterOptions,
         ...options,
       });
-    } catch (error: any) {
+    } catch (error) {
       return null;
     }
   }
@@ -78,9 +79,12 @@ export class AppService {
    * @param filterOptions
    * @param options
    */
-  async filterApps(filterOptions: any, options: any): Promise<App[]> {
+  async filterApps(
+    filterOptions: FindOptionsWhere<App>,
+    options: FindOneOptions<App>,
+  ): Promise<App[]> {
     return await this.appRepository.find({
-      where: { ...filterOptions },
+      where: filterOptions,
       ...options,
     });
   }
@@ -93,14 +97,18 @@ export class AppService {
    */
   async filterPaginatedApps(
     pagination: { skip: number; limit: number } = { skip: 0, limit: 10 },
-    filterOptions?: any,
+    filterOptions?: FindOptionsWhere<App>,
     options?: FindOneOptions<App>,
   ): Promise<[App[], number]> {
-    return await this.appRepository.findAndCount({
-      where: { ...filterOptions },
-      ...pagination,
-      ...options,
-    });
+    try {
+      return await this.appRepository.findAndCount({
+        where: filterOptions,
+        ...pagination,
+        ...options,
+      });
+    } catch (error) {
+      throw error;
+    }
   }
 
   /**
@@ -109,20 +117,17 @@ export class AppService {
    * @param updateFields
    */
   async updateApp(
-    filterOptions: any,
+    filterOptions: FindOptionsWhere<App>,
     updateFields: Partial<App>,
   ): Promise<UpdateResult> {
-    return await this.appRepository.update(
-      { ...filterOptions },
-      { ...updateFields },
-    );
+    return await this.appRepository.update(filterOptions, updateFields);
   }
 
   /**
    * Delete app by filter options.
    * @param filterOptions
    */
-  async deleteApp(filterOptions: any): Promise<DeleteResult> {
-    return await this.appRepository.delete({ ...filterOptions });
+  async deleteApp(filterOptions: FindOptionsWhere<App>): Promise<DeleteResult> {
+    return await this.appRepository.delete(filterOptions);
   }
 }

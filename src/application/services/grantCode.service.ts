@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GrantCode } from '../entities/grantCode.entity';
-import { Repository } from 'typeorm';
+import { FindOptionsWhere, Repository } from 'typeorm';
 import { App } from '../entities/app.entity';
 import { User } from '../../user/entities/user.entity';
 
@@ -55,10 +55,12 @@ export class GrantCodeService {
    * Check if grant code has lasted more than 1 minute revoke it.
    * @param filterOption
    */
-  async redeemGrantCode(filterOption: any): Promise<GrantCode> {
+  async redeemGrantCode(
+    filterOption: FindOptionsWhere<GrantCode>,
+  ): Promise<GrantCode> {
     //Check from cache else check from db.
     const grantCode = await this.grantCodeRepository.findOne({
-      where: { ...filterOption },
+      where: filterOption,
       relations: ['app', 'user'],
     });
     if (!grantCode) throw new BadRequestException('Invalid grant code.');

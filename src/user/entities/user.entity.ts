@@ -3,11 +3,10 @@ import {
   CreateDateColumn,
   Entity,
   Index,
-  JoinTable,
-  ManyToMany, OneToMany,
+  OneToMany,
   PrimaryGeneratedColumn,
-  UpdateDateColumn
-} from "typeorm";
+  UpdateDateColumn,
+} from 'typeorm';
 import { Role } from './role.entity';
 
 @Entity()
@@ -19,6 +18,15 @@ export class User {
   @Column({ unique: true })
   email: string;
 
+  @Column({ default: false })
+  emailVerified: boolean;
+
+  @Column({ nullable: true })
+  phoneNumber: string;
+
+  @Column({ default: false })
+  phoneVerified: boolean;
+
   @Column()
   firstName: string;
 
@@ -27,6 +35,9 @@ export class User {
 
   @Column()
   password: string;
+
+  @Column({ nullable: true })
+  pin: string;
 
   @Column({ default: false })
   active: boolean;

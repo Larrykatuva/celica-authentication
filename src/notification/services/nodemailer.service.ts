@@ -14,7 +14,7 @@ export class NodeMailerService extends SendEmail {
     super();
   }
   /**
-   * Generate test SMTP service account from ethereal.email
+   * Generate test SMTP service account from ethereal email.
    * Only needed if you don't have a real mail account for testing
    * @private
    */

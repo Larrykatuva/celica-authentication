@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AppScope } from '../entities/appScope.entity';
-import { FindOneOptions, Repository } from 'typeorm';
+import { FindOneOptions, FindOptionsWhere, Repository } from 'typeorm';
 import { App } from '../../application/entities/app.entity';
 import { Scope } from '../entities/scope.entity';
 import { User } from '../../user/entities/user.entity';
@@ -26,26 +26,28 @@ export class AppScopeService {
    * @param options
    */
   async filterAppScope(
-    filterOptions: any,
+    filterOptions: FindOptionsWhere<AppScope>,
     options?: FindOneOptions<AppScope>,
   ): Promise<AppScope> {
     try {
       return await this.appScopeRepository.findOne({
-        where: { ...filterOptions },
+        where: filterOptions,
         ...options,
       });
     } catch (error) {
-      throw new BadRequestException(error.message);
+      throw error;
     }
   }
 
-  async getAppScopes(filterOptions: any): Promise<string[]> {
+  async getAppScopes(
+    filterOptions: FindOptionsWhere<AppScope>,
+  ): Promise<string[]> {
     const appScopes = await this.appScopeRepository.find({
-      where: { ...filterOptions },
+      where: filterOptions,
       relations: ['scope'],
     });
     const result: string[] = [];
-    for (let i = 0; i < appScopes.length; i++){
+    for (let i = 0; i < appScopes.length; i++) {
       result.push(appScopes[i].scope.name);
     }
     return result;
@@ -80,7 +82,7 @@ export class AppScopeService {
    * @param updateData
    */
   async updateAppScopeConfiguration(
-    filterOptions: any,
+    filterOptions: FindOptionsWhere<AppScope>,
     user: User,
     updateData: UpdateAppScopeDto,
   ): Promise<AppScope> {
@@ -103,7 +105,7 @@ export class AppScopeService {
       })
     )
       throw new BadRequestException('App already linked to scope.');
-    await this.appScopeRepository.update({ ...filterOptions }, updateRecord);
+    await this.appScopeRepository.update(filterOptions, updateRecord);
     return await this.filterAppScope(filterOptions, {
       relations: ['app', 'scope', 'actionBy'],
     });
@@ -117,23 +119,23 @@ export class AppScopeService {
    */
   async filterAppScopes(
     pagination: DefaultPagination,
-    filterOptions?: any,
+    filterOptions?: FindOptionsWhere<AppScope>,
     options?: FindOneOptions<AppScope>,
   ): Promise<[AppScope[], number]> {
     try {
       return await this.appScopeRepository.findAndCount({
-        where: { ...filterOptions },
+        where: filterOptions,
         ...pagination,
         ...options,
       });
     } catch (error) {
-      throw new BadRequestException(error.message);
+      throw error;
     }
   }
 
   async deleteAppScopeConfiguration(filterOptions: any): Promise<void> {
     if (!(await this.filterAppScope(filterOptions)))
       throw new BadRequestException('Configuration not found');
-    await this.appScopeRepository.delete({ ...filterOptions });
+    await this.appScopeRepository.delete(filterOptions);
   }
 }
